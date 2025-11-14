@@ -13,8 +13,8 @@ const History = () => {
         console.log(username, password , baseURL)
         const res = await axios.get(`${baseURL}/history/` ,{
           auth: {
-          username: username,
-          password: password,
+          username,
+          password,
           },
         });
         setDatasets(res.data);
@@ -24,6 +24,29 @@ const History = () => {
     };
     fetchHistory();
   }, []);
+
+  const downloadPDF = async (id) => {
+    try {
+      const res = await axios.get(`${baseURL}/download/?id=${id}`, {
+        auth: {
+          username,
+          password,
+        },
+        responseType: "blob",
+      });
+
+      // Create a download link
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "equipment_summary.pdf";
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
+  };
 
   return (
     <div className="text-center mt-8">
@@ -54,14 +77,12 @@ const History = () => {
                   {d.summary?.total_equipment}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  <a
-                    href={`${baseURL}/download/?id=${d.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                  >
+                  <button
+                    onClick={() => downloadPDF(d.id)}
+                    className="px-3 py-1 bg-green-600 text-white rounded">
                     Download
-                  </a>
+                  </button>
+
                 </td>
               </tr>
             ))}

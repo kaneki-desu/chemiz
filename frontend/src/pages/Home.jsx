@@ -3,6 +3,8 @@ import axios from "axios";
 import Summary from "../components/Summary.jsx";
 
 const baseURL = import.meta.env.VITE_API_BASE;
+const username = import.meta.env.VITE_USERNAME;
+const password = import.meta.env.VITE_PASSWORD;
 
 const Home = () => {
   const [file, setFile] = useState(null);
@@ -22,8 +24,8 @@ const Home = () => {
       const res = await axios.post(`${baseURL}/upload/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         auth: {
-          username: "your_username",
-          password: "your_password",
+          username,
+          password,
         },
       });
       setSummary(res.data.summary || res.data);

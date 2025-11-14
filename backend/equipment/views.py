@@ -1,11 +1,13 @@
 import pandas as pd
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EquipmentDataset
 from .serializers import EquipmentDatasetSerializer
 import tempfile, os
 from django.http import FileResponse
+
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -21,6 +23,7 @@ class PublicView(APIView):
         return Response({"message": "Hello, world!"})
 
 class UploadCSVView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         file_obj = request.FILES.get('file')
         if not file_obj:
@@ -50,12 +53,14 @@ class UploadCSVView(APIView):
         return Response(EquipmentDatasetSerializer(dataset).data, status=status.HTTP_201_CREATED)
 
 class DatasetHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         datasets = EquipmentDataset.objects.all().order_by('-uploaded_at')[:5]
         serializer = EquipmentDatasetSerializer(datasets, many=True)
         return Response(serializer.data)
 
 class DownloadPDFView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         dataset_id = request.GET.get("id")
         print(request)
