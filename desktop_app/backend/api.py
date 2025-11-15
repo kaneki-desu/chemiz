@@ -10,4 +10,4 @@ def upload_csv(file_path):
 
 def download_pdf(dataset_id):
     url = f"{API_DOWNLOAD}?id={dataset_id}"
-    return requests.get(url, auth=AUTH_CREDENTIALS, stream=True)
+    return requests.get(url, auth=AUTH_CREDENTIALS)
